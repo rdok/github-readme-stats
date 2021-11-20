@@ -5,4 +5,4 @@ deploy: ../node_modules
 	sam deploy
 
 ../node_modules:
-	cd .. && yarn
+	cd .. && yarn --production
