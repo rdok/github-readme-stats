@@ -22,7 +22,7 @@ Resources:
         Proxy:
           Type: HttpApi
           Properties: { Path: '/{proxy+}', Method: get }
-  CDN:
+  CDN: # Caching is controlled by the MaxTTL; enabled having the lambda sending Cache-Control header.
     Type: AWS::CloudFront::Distribution
     Properties:
       DistributionConfig:
@@ -41,7 +41,6 @@ Resources:
             # Do not forward `Host` as it messes up the API Gateway
             Headers: [ 'Accept', 'Accept-Language', 'Origin', 'Referer' ]
           ViewerProtocolPolicy: redirect-to-https
-
 Outputs:
   RouterEndpoint:
     Value: !Sub  'https://${ServerlessHttpApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/'
