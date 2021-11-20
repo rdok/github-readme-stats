@@ -35,32 +35,34 @@ Resources:
         DefaultCacheBehavior:
           AllowedMethods: [ HEAD, GET ]
           TargetOriginId: RouterOriginId
-          ForwardedValues:
-            QueryString: true
-            Cookies: { Forward: all }
+          CachePolicyId: !Sub '${CDNCachePolicy.Id}'
+#          ForwardedValues:
+#            QueryString: true
+#            Cookies: { Forward: all }
             # Do not forward `Host` as it messes up the API Gateway
-            Headers: [ 'Accept', 'Accept-Language', 'Origin', 'Referer' ]
+#            Headers: [ 'Accept', 'Accept-Language', 'Origin', 'Referer' ]
           ViewerProtocolPolicy: redirect-to-https
-        CachePolicyId:
 
   CDNCachePolicy:
     Type: AWS::CloudFront::CachePolicy
     Properties:
       CachePolicyConfig:
         Comment: 'Cache based on HTTP query only.'
-        DefaultTTL: 86400 # 1 day
-        MaxTTL: 7200 # 2 hours; same as what origin usually sends
-        MinTTL: 86400 # 1 day
-        Name: !Ref "AWS::StackName"
+        DefaultTTL: 7200
+        MaxTTL: 7200
+        MinTTL: 7200
+        Name: !Ref AWS::StackName
         ParametersInCacheKeyAndForwardedToOrigin:
-          CookiesConfig: { CookieBehavior: 'none' }
+          CookiesConfig:
+            CookieBehavior: 'none'
           EnableAcceptEncodingGzip: false
-          HeadersConfig: { HeaderBehavior: 'none' }
+          HeadersConfig:
+            HeaderBehavior: 'none'
           QueryStringsConfig:
             QueryStringBehavior: 'all'
 
 Outputs:
   RouterEndpoint:
     Value: !Sub  'https://${ServerlessHttpApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/'
-  CDNName:
+  CDNEndpoint:
     Value: !Sub 'https://${CDN.DomainName}'
