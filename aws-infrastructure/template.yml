@@ -1,0 +1,63 @@
+AWSTemplateFormatVersion: 2010-09-09
+Transform: [ AWS::Serverless-2016-10-31 ]
+Parameters:
+  GitHubPersonalAccessToken:
+    Type: String
+    Description: 'No scopes required. https://github.com/settings/tokens/new'
+Resources:
+  Router:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: aws-infrastructure/router.main
+      CodeUri: ..
+      Runtime: nodejs14.x
+      Timeout: 30 # Limited by API Gateway
+      Environment:
+        Variables:
+          PAT_1: !Ref GitHubPersonalAccessToken
+      Events:
+        Index:
+          Type: HttpApi
+          Properties: { Path: '/', Method: get }
+        Proxy:
+          Type: HttpApi
+          Properties: { Path: '/{proxy+}', Method: get }
+  CDN:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Enabled: true
+        Origins:
+          - Id: RouterOriginId
+            DomainName: !Sub '${ServerlessHttpApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}'
+            CustomOriginConfig:
+              OriginProtocolPolicy: 'https-only'
+        DefaultCacheBehavior:
+          AllowedMethods: [ HEAD, GET ]
+          TargetOriginId: RouterOriginId
+          CachePolicyId: !Sub '${CDNCachePolicy.Id}'
+          ViewerProtocolPolicy: redirect-to-https
+
+  CDNCachePolicy:
+    Type: AWS::CloudFront::CachePolicy
+    Properties:
+      CachePolicyConfig:
+        Comment: 'Cache based on HTTP query only.'
+        DefaultTTL: 7200
+        MaxTTL: 7200
+        MinTTL: 7200
+        Name: !Ref AWS::StackName
+        ParametersInCacheKeyAndForwardedToOrigin:
+          CookiesConfig:
+            CookieBehavior: 'none'
+          EnableAcceptEncodingGzip: false
+          HeadersConfig:
+            HeaderBehavior: 'none'
+          QueryStringsConfig:
+            QueryStringBehavior: 'all'
+
+Outputs:
+  RouterEndpoint:
+    Value: !Sub  'https://${ServerlessHttpApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/'
+  CDNEndpoint:
+    Value: !Sub 'https://${CDN.DomainName}'
