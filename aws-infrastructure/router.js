@@ -9,16 +9,10 @@ exports.main = async (event) => {
   const request = { query: event.queryStringParameters ?? {} };
   const response = new Response();
 
-  switch (path) {
-    case "/":
-      return await index(request, response);
-    case "/pin":
-      return await pin(request, response);
-    case "/top-langs":
-      return await topLanguages(request, response);
-    case "/wakatime":
-      return await wakatime(request, response);
-    default:
-      return response.errorNotFound();
-  }
+  if (path === "/") return await index(request, response);
+  if (path.startsWith("/pin")) return await pin(request, response);
+  if (path.startsWith("/top-langs")) return await topLanguages(request, response);
+  if (path.startsWith("/wakatime")) return await wakatime(request, response);
+
+  return response.errorNotFound();
 };
