@@ -1,6 +1,7 @@
 const axios = require("axios");
 
 const fetchWakatimeStats = async ({ username, api_domain, range }) => {
+  console.log('Fetching Wakatime Stats');
   try {
     const { data } = await axios.get(
       `https://${
@@ -8,6 +9,7 @@ const fetchWakatimeStats = async ({ username, api_domain, range }) => {
       }/api/v1/users/${username}/stats/${range || ''}?is_including_today=true`,
     );
 
+    console.log('Done Fetching Wakatime Stats');
     return data.data;
   } catch (err) {
     if (err.response.status < 200 || err.response.status > 299) {

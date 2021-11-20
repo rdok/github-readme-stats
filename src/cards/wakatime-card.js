@@ -102,6 +102,8 @@ const recalculatePercentages = (languages) => {
 };
 
 const renderWakatimeCard = (stats = {}, options = { hide: [] }) => {
+  console.log('Start: Prepare wakatime card')
+
   let { languages } = stats;
   const {
     hide_title = false,
@@ -268,11 +270,15 @@ const renderWakatimeCard = (stats = {}, options = { hide: [] }) => {
     `,
   );
 
-  return card.render(`
+  const cardRender = card.render(`
     <svg x="0" y="0" width="100%">
       ${finalLayout}
     </svg>
   `);
+
+  console.log('Done: Prepare wakatime card')
+
+  return cardRender;
 };
 
 module.exports = renderWakatimeCard;
