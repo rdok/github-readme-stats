@@ -1,2 +1,2 @@
-## WTFs
-- Despite axios & other packages living in devDependencies@package.json, Vercel can still access them. To resolve this all packages are installed.
+## Infrastructure
+- 304: The origin cannot provide the `If-Modified-Since` because it is stateless.
