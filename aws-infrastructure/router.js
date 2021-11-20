@@ -16,7 +16,7 @@ exports.main = async ({ queryStringParameters = {}, path }) => {
     case "/top-langs":
       return await topLanguages(request, response);
     case "/wakatime":
-      return await topLanguages(request, response);
+      return await wakatime(request, response);
     default:
       return response.errorNotFound();
   }
