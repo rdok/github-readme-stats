@@ -1,0 +1,29 @@
+AWSTemplateFormatVersion: 2010-09-09
+Transform: [ AWS::Serverless-2016-10-31 ]
+Parameters:
+  GitHubPersonalAccessToken:
+    Type: String
+    Description: 'No scopes required. https://github.com/settings/tokens/new'
+Resources:
+  Router:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: aws-infrastructure/router.main
+      CodeUri: ..
+      Runtime: nodejs14.x
+      Timeout: 30 # Limited by API Gateway
+      Environment:
+        Variables:
+          PAT_1: !Ref GitHubPersonalAccessToken
+      Events:
+        Index:
+          Type: Api
+          Properties: { Path: '/', Method: get }
+        Proxy:
+          Type: Api
+          Properties: { Path: '/{proxy+}', Method: get }
+
+Outputs:
+  RouterEndpoint:
+    Value:
+      Fn::Sub: 'https://${ServerlessRestApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/Prod/'
