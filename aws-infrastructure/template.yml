@@ -36,11 +36,6 @@ Resources:
           AllowedMethods: [ HEAD, GET ]
           TargetOriginId: RouterOriginId
           CachePolicyId: !Sub '${CDNCachePolicy.Id}'
-#          ForwardedValues:
-#            QueryString: true
-#            Cookies: { Forward: all }
-            # Do not forward `Host` as it messes up the API Gateway
-#            Headers: [ 'Accept', 'Accept-Language', 'Origin', 'Referer' ]
           ViewerProtocolPolicy: redirect-to-https
 
   CDNCachePolicy:
