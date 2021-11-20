@@ -4,9 +4,10 @@ const wakatime = require("../api/wakatime");
 const pin = require("../api/pin");
 const topLanguages = require("../api/top-langs");
 
-exports.main = async ({ queryStringParameters = {}, path }) => {
-  const request = { query: queryStringParameters ?? {} };
-  let response = new Response();
+exports.main = async (event) => {
+  const path = event.requestContext.http.path;
+  const request = { query: event.queryStringParameters ?? {} };
+  const response = new Response();
 
   switch (path) {
     case "/":
