@@ -4,6 +4,9 @@ Parameters:
   GitHubPersonalAccessToken:
     Type: String
     Description: 'No scopes required. https://github.com/settings/tokens/new'
+  WakatimeAPITokenBase64Rdok:
+    Type: String
+    Description: 'Providing access to private stats.'
 Resources:
   Router:
     Type: AWS::Serverless::Function
@@ -15,6 +18,7 @@ Resources:
       Environment:
         Variables:
           PAT_1: !Ref GitHubPersonalAccessToken
+          WAKATIME_API_TOKEN_BASE64_RDOK: !Ref WakatimeAPITokenBase64Rdok
       Events:
         Index:
           Type: HttpApi
