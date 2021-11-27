@@ -8,3 +8,8 @@ Serve [GitHub Readme Stats](https://github.com/anuraghazra/github-readme-stats) 
 - Lambda with 128MB of memory
 - API Gateway with maximum timeout of 30 seconds and cheaper HttpApi
 - CloudFront with caching based on HTTP query only
+
+## Private Wakatime
+
+- `/api/v1/users/:user/stats/:range` without a specified range increases response time to ~30 seconds.
+- `/api/v1/users/:user/stats/:range` WITH a specified range of 7 days decreases response time to ~7 seconds. However, this requires a Wakatime API for users having a repository. This fork addresses this issue.
