@@ -1,12 +1,13 @@
 AWSTemplateFormatVersion: 2010-09-09
-Transform: [ AWS::Serverless-2016-10-31 ]
+Transform: [AWS::Serverless-2016-10-31]
 Parameters:
   GitHubPersonalAccessToken:
     Type: String
-    Description: 'No scopes required. https://github.com/settings/tokens/new'
+    Description: "No scopes required. https://github.com/settings/tokens/new"
   WakatimeAPITokenBase64Rdok:
     Type: String
-    Description: 'Providing access to private stats.'
+    Description: "Providing access to private stats."
+  AwsChatbotStackName: { Type: String, Default: "rdok-prod-aws-chatbot" }
 Resources:
   Router:
     Type: AWS::Serverless::Function
@@ -22,10 +23,26 @@ Resources:
       Events:
         Index:
           Type: HttpApi
-          Properties: { Path: '/', Method: get }
+          Properties: { Path: "/", Method: get }
         Proxy:
           Type: HttpApi
-          Properties: { Path: '/{proxy+}', Method: get }
+          Properties: { Path: "/{proxy+}", Method: get }
+  MonitorRouter:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      Dimensions: [{ Name: FunctionName, Value: !Ref Router }]
+      EvaluationPeriods: 1
+      Period: 60 # 1 minute
+      MetricName: Errors
+      Namespace: AWS/Lambda
+      Statistic: Sum
+      Threshold: 1
+      TreatMissingData: notBreaching
+      AlarmActions:
+        - Fn::ImportValue: !Sub "${AwsChatbotStackName}-ErrorsListenerArn"
+      OKActions:
+        - Fn::ImportValue: !Sub "${AwsChatbotStackName}-ErrorsListenerArn"
   CDN:
     Type: AWS::CloudFront::Distribution
     Properties:
@@ -33,37 +50,37 @@ Resources:
         Enabled: true
         Origins:
           - Id: RouterOriginId
-            DomainName: !Sub '${ServerlessHttpApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}'
+            DomainName: !Sub "${ServerlessHttpApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}"
             CustomOriginConfig:
-              OriginProtocolPolicy: 'https-only'
+              OriginProtocolPolicy: "https-only"
         DefaultCacheBehavior:
-          AllowedMethods: [ HEAD, GET ]
+          AllowedMethods: [HEAD, GET]
           TargetOriginId: RouterOriginId
-          CachePolicyId: !Sub '${CDNCachePolicy.Id}'
+          CachePolicyId: !Sub "${CDNCachePolicy.Id}"
           ViewerProtocolPolicy: redirect-to-https
 
   CDNCachePolicy:
     Type: AWS::CloudFront::CachePolicy
     Properties:
       CachePolicyConfig:
-        Comment: 'Cache based on HTTP query only.'
+        Comment: "Cache based on HTTP query only."
         DefaultTTL: 86400 # 1 day
         MinTTL: 3600 # 1 hour
         MaxTTL: 2592000 # 1 month
         Name: !Ref AWS::StackName
         ParametersInCacheKeyAndForwardedToOrigin:
           CookiesConfig:
-            CookieBehavior: 'none'
+            CookieBehavior: "none"
           EnableAcceptEncodingGzip: false
           HeadersConfig:
-            HeaderBehavior: 'none'
+            HeaderBehavior: "none"
           QueryStringsConfig:
-            QueryStringBehavior: 'all'
+            QueryStringBehavior: "all"
 
 Outputs:
   RouterEndpoint:
-    Value: !Sub  'https://${ServerlessHttpApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/'
+    Value: !Sub "https://${ServerlessHttpApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/"
   CDNCloudFrontId:
     Value: !Ref CDN
   CDNEndpoint:
-    Value: !Sub 'https://${CDN.DomainName}'
+    Value: !Sub "https://${CDN.DomainName}"
