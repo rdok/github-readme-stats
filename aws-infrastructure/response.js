@@ -3,10 +3,10 @@ module.exports.Response = class {
     this.headers = {};
   }
 
-  setHeader = function(key, value) {
+  setHeader = function (key, value) {
     this.headers[key] = value;
   };
-  send = function(response) {
+  send = function (response) {
     console.log(response); // to log some occasional invalid responses from wakatime
     return {
       statusCode: 200,
@@ -14,7 +14,7 @@ module.exports.Response = class {
       body: response,
     };
   };
-  errorNotFound = function() {
+  errorNotFound = function () {
     return {
       statusCode: 404,
       headers: this.headers,

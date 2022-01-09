@@ -11,7 +11,8 @@ exports.main = async (event) => {
 
   if (path === "/") return await index(request, response);
   if (path.startsWith("/pin")) return await pin(request, response);
-  if (path.startsWith("/top-langs")) return await topLanguages(request, response);
+  if (path.startsWith("/top-langs"))
+    return await topLanguages(request, response);
   if (path.startsWith("/wakatime")) return await wakatime(request, response);
 
   return response.errorNotFound();
