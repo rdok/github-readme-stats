@@ -12,7 +12,7 @@ Resources:
   Router:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: aws-infrastructure/router.main
+      Handler: aws-infrastructure/router/router.main
       CodeUri: ..
       Runtime: nodejs14.x
       Timeout: 30 # Limited by API Gateway

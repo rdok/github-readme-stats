@@ -1,8 +1,8 @@
 const { Response } = require("./response");
-const index = require("../api/index");
-const wakatime = require("../api/wakatime");
-const pin = require("../api/pin");
-const topLanguages = require("../api/top-langs");
+const index = require("../../api/index");
+const wakatime = require("../../api/wakatime");
+const pin = require("../../api/pin");
+const topLanguages = require("../../api/top-langs");
 
 exports.main = async (event) => {
   const path = event.requestContext.http.path;
