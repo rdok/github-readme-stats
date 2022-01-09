@@ -26,3 +26,6 @@ invalidate-cache:
 		--distribution-id "$${CLOUDFRONT_DISTRIBUTION_ID}" \
 		--id "$${INVALIDATION_ID}" && \
 	MESSAGE=$$(echo "Done") && echo $$MESSAGE
+
+prettier:
+	npx prettier --write .
