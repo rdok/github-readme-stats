@@ -2,6 +2,7 @@ local_start-api: ../node_modules
 	sam local start-api  --env-vars .env.json
 
 deploy: ../node_modules
+	sam build
 	sam deploy
 	make invalidate-cache
 
